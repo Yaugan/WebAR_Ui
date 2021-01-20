@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>The JUMA Group AR Card</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/jeromeetienne/AR.js/2.0.5/aframe/build/aframe-ar.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+     <!-- Bootstrap CSS -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+    <script
+      src="https://kit.fontawesome.com/7a96dfa2fc.js"
+      crossorigin="anonymous"
+    ></script>
+  <style>
+    .btn {
+      background-color: DodgerBlue;
+      border: none;
+      color: white;
+      padding: 12px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 0;
+      position: absolute;
+      font-size: 200%;
+      visibility: hidden;
+    }
+
+    .btn:hover {
+      background-color: RoyalBlue;
+    }
+
+    #videoUI{
+        position: absolute;
+        bottom: 40%;
+        left: 2%;
+        z-index: 1;
+        margin: 0 auto;
+       visibility: hidden;
+    }
+
+    #linkedinbutton {
+      bottom: 15%;
+      left: 64%;
+      text-align: center;
+      z-index: 1;
+    }
+
+    #phonebutton {
+      bottom: 15%;
+      left: 40%;
+      text-align: center;
+      z-index: 1;
+    }
+
+    #websitebutton {
+      bottom: 15%;
+      left: 16%;
+      text-align: center;
+      z-index: 1;
+    }
+
+    .img{
+      display: inline-block;
+      max-width: 30%;
+      height: auto;
+    }
+
+    .container {
+      position: relative;
+      text-align: center;
+      color: white;
+    }
+
+    .top-right {
+      position: absolute;
+      top: 8px;
+      right: 16px;
+    }
+  
+  </style>
+  </head>
+  <body style="margin : 0px; overflow: hidden;">
+    <div>
+      <button id="linkedinbutton" class="btn">
+        <i class="fab fa-linkedin-in"></i>
+      </button>
+
+      <button id="phonebutton" class="btn">
+        <i class="fas fa-phone-alt"></i>
+      </button>
+
+      <button id="websitebutton" class="btn">
+        <i class="fas fa-link"></i>
+      </button>
+
+      <video id="videoUI" width="400" height="280" controls>
+        <source src="video/cardVideo.mp4" type="video/mp4">
+        Your browser does not support HTML video.
+      </video>
+    </div>
+    <div class="col d-flex align-items-center justify-content-center">
+      <img src="images/thumbnail.png" class="rounded img" alt="CenterImage">
+    </div>
+
+    <div class="container col-lg-6 col-md-6">
+      <img src="images/thumbnail.png" class="img-responsive img" style="vertical-align: bottom; position: absolute;"alt="Snow" style="width:100%;">
+      <div class="top-right">Top Right</div>
+    </div>
+    
+
+    <a-scene
+      id="scene"
+      cursor="fuse: false; rayOrigin: mouse;"
+      embedded
+      arjs="patternRatio: 0.90; debugUIEnabled: false; trackingMethod: best; sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+    >
+      <a-assets>
+        <video
+          id="Video_Asset_0"
+          autoplay="false"
+          loop
+          crossorigin="anonymous"
+          src="video/cardVideo.mp4"
+          webkit-playsinline
+          playsinline
+          controls
+        ></video>
+      </a-assets>
+
+      <a-marker-camera
+        videohandler_2
+        emitevents="true"
+        preset="custom"
+        type="pattern"
+        url="pattern/pattern-finalfinal.patt"
+        button
+      >
+        <a-marker
+          type="pattern"
+          url="pattern/pattern-finalfinal.patt"
+          button
+        >
+          <a-video
+            width="2.5"
+            height="1.8"
+            src="#Video_Asset_0"
+            class="intersectable"
+            position="0 0 0"
+            rotation="-90 0 0"
+            color="#FFFFFF"
+          >
+            <a-image
+              id="Play-Image"
+              geometry="primitive: plane"
+              src="images/thumbnail.png"
+              position="0 0 0.05"
+              width="2.5"
+              height="1.8"
+              foo
+            >
+              <a-animation attribute="rotation" to="0 360 0" delay="500" dur="1000" begin="fallclick"></a-animation>
+              <a-animation attribute="position" to="0 0 -0.1" delay = "500" dur="1000" begin="fallclick"></a-animation>
+            </a-image>
+          </a-video>
+        </a-marker>
+      </a-marker-camera>
+      <a-entity camera mouse-cursor position="0 0 0"></a-entity>
+    </a-scene>
+
+    <script>
+      let allow_clicks = false;
+      let firstTime = true;
+      let firstforvideoui = true;
+      let Video_0 = document.querySelector("#Video_Asset_0");
+      var Lbutton = document.querySelector("#linkedinbutton");
+      var Pbutton = document.querySelector("#phonebutton");
+      var Wbutton = document.querySelector("#websitebutton");
+
+      AFRAME.registerComponent("foo", {
+        init: function() {
+          let anim = document.querySelector("a-animation");
+          let Video_0 = document.querySelector("#Video_Asset_0");
+
+          this.el.addEventListener("click", e => {
+            console.log("hello");
+            this.el.emit("bar");
+            console.log("emit");
+            anim.emit("fallclick");
+          });
+
+          document.querySelector("#scene").addEventListener("markerFound", evt => {
+            allow_clicks = true;
+            document.querySelector("#container").style.visibility = "hiddem";
+            if(!firstTime){
+              Video_0.play();
+              document.querySelector("#videoUI").style.visibility = "hidden";
+            }  
+          });
+
+          document.querySelector("#scene").addEventListener("markerLost", evt => {
+            allow_clicks = false;
+            Video_0.pause();
+            if(!firstforvideoui)
+            {
+                document.querySelector("#videoUI").style.visibility = "visible";
+                document.querySelector("#videoUI").play();
+            }
+            
+          });
+
+          document.querySelector("#scene").addEventListener("click", evt => {
+            if (allow_clicks) {
+              //document.querySelector("#Play-Image").setAttribute("visible", false);
+              Lbutton.style.visibility = "visible";
+              Pbutton.style.visibility = "visible";
+              Wbutton.style.visibility = "visible";
+              Video_0.play();
+              firstTime = false;
+              firstforvideoui = false;
+            }
+          });
+
+          Lbutton.addEventListener("click", function(evt) {
+            window.location = "https://www.linkedin.com/in/ekansh-mittal-929297ba/";
+          });
+
+          Wbutton.addEventListener("click", function(evt) {
+            window.location = "http://wufu.in/";
+          });
+
+          Pbutton.addEventListener("click", function(evt) {
+            window.location = "tel: 9873183980";
+          });
+
+        }
+      });
+
+          
+    </script>
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+  </body>
+</html>
